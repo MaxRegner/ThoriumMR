@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors and Alex313031. All rights reserved.
+// Copyright 2022 The MR  and Alex313031. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,7 +18,63 @@
 #include "components/infobars/core/infobar.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/resource/resource_bundle.h"
+#include "ui/gfx/animation/animation_delegate.h"
+#include "ui/gfx/animation/linear_animation.h"
+#include "ui/gfx/animation/slide_animation.h"
+#include "ui/gfx/animation/throb_animation.h"
+#include "ui/gfx/color_palette.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/paint_vector_icon.h"
+#include "ui/gfx/text_constants.h"
+#include "ui/gfx/vector_icon_types.h"
+#include "ui/views/animation/ink_drop_highlight.h"
+#include "ui/views/background.h"
+#include "ui/views/controls/button/label_button.h"
+#include "ui/views/controls/button/label_button_border.h"
+#include "ui/views/controls/label.h"
+#include "ui/views/layout/box_layout.h"
+#include "ui/views/painter.h"
 
+#if defined(OS_WIN)
+#include "base/win/windows_version.h"
+#endif
+
+namespace {
+
+// The amount of time the infobar remains open after the user clicks the
+// "Make Default" button.
+constexpr int kInfobarCloseDelayMs = 3000;
+
+// The amount of time the infobar remains open after the user clicks the
+// "Undo" button.
+constexpr int kInfobarUndoDelayMs = 5000;
+
+// The amount of time the infobar remains open after the user clicks the
+// "Got it" button.
+constexpr int kInfobarGotItDelayMs = 5000;
+
+// The amount of time the infobar remains open after the user clicks the
+// "Close" button.
+constexpr int kInfobarCloseButtonDelayMs = 2000;
+
+// The amount of time the infobar remains open after the user clicks the
+// "Close" button.
+constexpr int kInfobarCloseButtonDelayMs = 2000;
+
+// The amount of time the infobar remains open after the user clicks the
+// "Close" button.
+constexpr int kInfobarCloseButtonDelayMs = 2000;
+
+// The amount of time the infobar remains open after the user clicks the
+// "Close" button.
+constexpr int kInfobarCloseButtonDelayMs = 2000;
+
+// The amount of time the infobar remains open after the user clicks the
+// "Close" button.
+constexpr int kInfobarCloseButtonDelayMs = 2000;
+
+// The amount of time the infobar remains open after the user clicks the
 namespace chrome {
 
 // static
@@ -64,6 +120,20 @@ bool DefaultBrowserInfoBarDelegate::ShouldExpire(
     const NavigationDetails& details) const {
   return should_expire_ && ConfirmInfoBarDelegate::ShouldExpire(details);
 }
+
+void DefaultBrowserInfoBarDelegate::InfoBarDismissed() {
+  action_taken_ = true;
+  base::RecordAction(base::UserMetricsAction("DefaultBrowserInfoBar_Dismiss"));
+  UMA_HISTOGRAM_ENUMERATION("DefaultBrowser.InfoBar.UserInteraction",
+                            DISMISS_INFO_BAR,
+                            NUM_INFO_BAR_USER_INTERACTION_TYPES);
+}
+
+DefaultBrowserInfoBarDelegate::InfoBarAutomationType
+DefaultBrowserInfoBarDelegate::GetInfoBarAutomationType() const {
+  return DEFAULT_BROWSER_INFOBAR;
+}
+
 
 void DefaultBrowserInfoBarDelegate::InfoBarDismissed() {
   action_taken_ = true;
